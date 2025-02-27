@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Photobox Web</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Photobox Web</h1>
+
+    <div class="container">
+      <button id="openCamera">Gunakan Kamera</button>
+      <input type="file" id="uploadImage" accept="image/*" />
+    </div>
+
+    <div class="preview">
+      <video id="video" autoplay></video>
+      <canvas id="canvas"></canvas>
+      <div id="countdown"></div>
+      <button id="capture">Ambil Foto</button>
+    </div>
+
+    <div class="options">
+      <label>Pilih Jumlah Foto:</label>
+      <select id="photoCount">
+        <option value="2">2 Foto</option>
+        <option value="3">3 Foto</option>
+        <option value="4">4 Foto</option>
+      </select>
+    </div>
+
+    <div id="collage-container">
+      <canvas id="collageCanvas"></canvas>
+    </div>
+
+    <button id="savePhoto">Simpan Hasil</button>
+
+    <script src="script.js"></script>
+  </body>
+</html>
