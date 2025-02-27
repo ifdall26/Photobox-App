@@ -52,9 +52,47 @@ function startCountdown() {
 
 function takePhoto() {
   let img = new Image();
+  let videoWidth = video.videoWidth;
+  let videoHeight = video.videoHeight;
+
+  // **Hitung rasio kamera (asli) dan rasio yang diinginkan (kolase)**
+  let videoAspectRatio = videoWidth / videoHeight;
+  let collageAspectRatio = COLLAGE_WIDTH / PHOTO_HEIGHT;
+
+  let targetWidth = videoWidth;
+  let targetHeight = videoHeight;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  // **Jika kamera lebih tinggi dari yang diinginkan, potong bagian atas dan bawah**
+  if (videoAspectRatio < collageAspectRatio) {
+    targetHeight = videoWidth / collageAspectRatio;
+    offsetY = (videoHeight - targetHeight) / 2;
+  }
+  // **Jika kamera lebih lebar dari yang diinginkan, potong sisi kiri dan kanan**
+  else {
+    targetWidth = videoHeight * collageAspectRatio;
+    offsetX = (videoWidth - targetWidth) / 2;
+  }
+
+  // **Pastikan Canvas Sesuai Ukuran Kolase**
   canvas.width = COLLAGE_WIDTH;
   canvas.height = PHOTO_HEIGHT;
-  ctx.drawImage(video, 0, 0, COLLAGE_WIDTH, PHOTO_HEIGHT);
+
+  // **Gambar Ulang dengan Crop agar Tetap Proporsional**
+  ctx.drawImage(
+    video,
+    offsetX,
+    offsetY,
+    targetWidth,
+    targetHeight,
+    0,
+    0,
+    COLLAGE_WIDTH,
+    PHOTO_HEIGHT
+  );
+
+  // **Simpan ke Temp Image**
   img.src = canvas.toDataURL("image/png");
   img.onload = function () {
     tempImage = img;
