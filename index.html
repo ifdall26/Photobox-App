@@ -12,29 +12,19 @@
     <div class="container">
       <button id="openCamera">Gunakan Kamera</button>
       <input type="file" id="uploadImage" accept="image/*" />
+      <button id="addToCollage" disabled>Tambahkan ke Kolase</button>
     </div>
 
     <div class="preview">
       <video id="video" autoplay></video>
       <canvas id="canvas"></canvas>
-      <div id="countdown"></div>
+      <div id="countdown" class="countdown"></div>
       <button id="capture">Ambil Foto</button>
     </div>
 
-    <div class="options">
-      <label>Pilih Jumlah Foto:</label>
-      <select id="photoCount">
-        <option value="2">2 Foto</option>
-        <option value="3">3 Foto</option>
-        <option value="4">4 Foto</option>
-      </select>
-    </div>
-
-    <div id="collage-container">
-      <canvas id="collageCanvas"></canvas>
-    </div>
-
-    <button id="savePhoto">Simpan Hasil</button>
+    <h2>Kolase</h2>
+    <canvas id="collageCanvas"></canvas>
+    <button id="savePhoto">Simpan Kolase</button>
 
     <script src="script.js"></script>
   </body>

@@ -2,17 +2,22 @@ const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const captureButton = document.getElementById("capture");
-const countdownElement = document.getElementById("countdown");
+const uploadInput = document.getElementById("uploadImage");
+const addToCollageButton = document.getElementById("addToCollage");
 const collageCanvas = document.getElementById("collageCanvas");
 const collageCtx = collageCanvas.getContext("2d");
 const saveButton = document.getElementById("savePhoto");
+const countdownDisplay = document.getElementById("countdown");
+
 let photos = [];
-let photoCount = 3; // Default 3 foto
+let tempImage = null;
 
-document.getElementById("photoCount").addEventListener("change", function () {
-  photoCount = parseInt(this.value);
-});
+// Ukuran lebar tetap 480px, tinggi menyesuaikan
+const TARGET_WIDTH = 420;
+const SPACING = 20; // Jarak antar foto
+const BORDER_SIZE = 30; // Bingkai putih
 
+// Aktifkan kamera
 navigator.mediaDevices
   .getUserMedia({ video: true })
   .then((stream) => {
@@ -20,101 +25,119 @@ navigator.mediaDevices
   })
   .catch((err) => console.error("Error accessing webcam:", err));
 
-captureButton.addEventListener("click", () => {
-  startCountdown(3, takePhoto);
-});
+captureButton.addEventListener("click", startCountdown);
+uploadInput.addEventListener("change", handleUpload);
+addToCollageButton.addEventListener("click", addPhotoToCollage);
+saveButton.addEventListener("click", saveCollage);
 
-function startCountdown(seconds, callback) {
-  countdownElement.innerText = seconds;
+// Countdown sebelum ambil foto
+function startCountdown() {
+  let count = 3;
+  countdownDisplay.textContent = count;
+  countdownDisplay.style.display = "block";
+
   let interval = setInterval(() => {
-    seconds--;
-    countdownElement.innerText = seconds;
-    if (seconds <= 0) {
+    count--;
+    if (count > 0) {
+      countdownDisplay.textContent = count;
+    } else {
       clearInterval(interval);
-      countdownElement.innerText = "";
-      callback();
+      countdownDisplay.style.display = "none";
+      takePhoto();
     }
   }, 1000);
 }
 
+// Ambil foto dari kamera
 function takePhoto() {
-  if (photos.length >= photoCount) {
-    generateCollage();
-    return;
-  }
-
-  const videoAspectRatio = video.videoWidth / video.videoHeight;
-  const targetWidth = 400;
-  const targetHeight = targetWidth / videoAspectRatio; // Jaga skala tetap proporsional
-
-  canvas.width = targetWidth;
-  canvas.height = targetHeight;
-
-  ctx.drawImage(video, 0, 0, targetWidth, targetHeight);
-
-  // Simpan foto tanpa distorsi
   let img = new Image();
+  canvas.width = TARGET_WIDTH;
+  canvas.height = video.videoHeight / (video.videoWidth / TARGET_WIDTH);
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   img.src = canvas.toDataURL("image/png");
   img.onload = function () {
-    let tempCanvas = document.createElement("canvas");
-    let tempCtx = tempCanvas.getContext("2d");
-
-    // Buat ukuran bingkai tetap dengan aspect ratio asli
-    let frameWidth = targetWidth;
-    let frameHeight = targetHeight;
-    tempCanvas.width = frameWidth;
-    tempCanvas.height = frameHeight;
-
-    // Latar belakang putih
-    tempCtx.fillStyle = "white";
-    tempCtx.fillRect(0, 0, frameWidth, frameHeight);
-
-    // Gambar foto di tengah tanpa distorsi
-    let offsetX = (frameWidth - targetWidth) / 2;
-    let offsetY = (frameHeight - targetHeight) / 2;
-    tempCtx.drawImage(img, offsetX, offsetY, targetWidth, targetHeight);
-
-    photos.push(tempCanvas.toDataURL("image/png"));
-
-    if (photos.length < photoCount) {
-      startCountdown(3, takePhoto);
-    } else {
-      generateCollage();
-    }
+    tempImage = img;
+    addToCollageButton.disabled = false;
   };
 }
 
-function generateCollage() {
-  const photoWidth = 400;
-  const aspectRatio = video.videoWidth / video.videoHeight;
-  const photoHeight = photoWidth / aspectRatio; // Jaga proporsi foto
-  const spacing = 20;
-  const borderSize = 30;
-  const totalHeight =
-    photoHeight * photoCount + spacing * (photoCount - 1) + borderSize * 2;
+// Upload & tambahkan ke kolase
+function handleUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-  collageCanvas.width = photoWidth + borderSize * 2;
+  let reader = new FileReader();
+  reader.onload = function (e) {
+    let img = new Image();
+    img.src = e.target.result;
+    img.onload = function () {
+      tempImage = resizeImage(img, TARGET_WIDTH);
+      addToCollageButton.disabled = false;
+    };
+  };
+  reader.readAsDataURL(file);
+}
+
+// Tambahkan foto ke kolase
+function addPhotoToCollage() {
+  if (!tempImage) return;
+
+  const resizedImage = resizeImage(tempImage, TARGET_WIDTH);
+  photos.push(resizedImage.src);
+  tempImage = null;
+  addToCollageButton.disabled = true;
+  updateCollage();
+}
+
+// Update tampilan kolase
+function updateCollage() {
+  const totalHeight =
+    photos.reduce((acc, photoSrc) => {
+      let img = new Image();
+      img.src = photoSrc;
+      return acc + img.height;
+    }, 0) +
+    SPACING * (photos.length - 1) +
+    BORDER_SIZE * 2;
+
+  collageCanvas.width = TARGET_WIDTH + BORDER_SIZE * 2;
   collageCanvas.height = totalHeight;
 
-  // Background bingkai putih
-  collageCtx.fillStyle = "white";
+  collageCtx.fillStyle = "white"; // Background putih
   collageCtx.fillRect(0, 0, collageCanvas.width, collageCanvas.height);
 
-  let y = borderSize;
-
+  let y = BORDER_SIZE;
   photos.forEach((photo) => {
     let img = new Image();
     img.src = photo;
     img.onload = function () {
-      collageCtx.drawImage(img, borderSize, y, photoWidth, photoHeight);
-      y += photoHeight + spacing;
+      collageCtx.drawImage(img, BORDER_SIZE, y, TARGET_WIDTH, img.height);
+      y += img.height + SPACING;
     };
   });
 }
 
-saveButton.addEventListener("click", () => {
+// Simpan kolase ke file
+function saveCollage() {
   const link = document.createElement("a");
-  link.download = "photobox_strip.png";
+  link.download = "photobox_collage.png";
   link.href = collageCanvas.toDataURL("image/png");
   link.click();
-});
+}
+
+// Fungsi resize agar gambar tetap proporsional
+function resizeImage(image, targetWidth) {
+  let aspectRatio = image.width / image.height;
+  let targetHeight = targetWidth / aspectRatio;
+
+  const tempCanvas = document.createElement("canvas");
+  const tempCtx = tempCanvas.getContext("2d");
+
+  tempCanvas.width = targetWidth;
+  tempCanvas.height = targetHeight;
+  tempCtx.drawImage(image, 0, 0, targetWidth, targetHeight);
+
+  let resizedImage = new Image();
+  resizedImage.src = tempCanvas.toDataURL("image/png");
+  return resizedImage;
+}
