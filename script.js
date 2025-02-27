@@ -12,13 +12,15 @@ const countdownDisplay = document.getElementById("countdown");
 let photos = [];
 let tempImage = null;
 
-// Ukuran tetap agar tidak ada distorsi
-const COLLAGE_WIDTH = 480;
+// **Ukuran Tetap untuk Kolase**
+const COLLAGE_WIDTH = 420;
 const COLLAGE_HEIGHT = 1390;
-const PHOTO_HEIGHT = COLLAGE_HEIGHT / 4; // Karena ada 4 frame
-const PHOTO_WIDTH = COLLAGE_WIDTH;
+const PHOTO_HEIGHT = 325; // Dihitung otomatis agar pas
+const MAX_PHOTOS = 4;
+const SPACING = 10; // Jarak antar foto
+const BORDER_SIZE = 30; // Frame luar kolase
 
-// Aktifkan kamera
+// Aktifkan Kamera
 navigator.mediaDevices
   .getUserMedia({ video: true })
   .then((stream) => {
@@ -50,9 +52,9 @@ function startCountdown() {
 
 function takePhoto() {
   let img = new Image();
-  canvas.width = PHOTO_WIDTH;
+  canvas.width = COLLAGE_WIDTH;
   canvas.height = PHOTO_HEIGHT;
-  ctx.drawImage(video, 0, 0, PHOTO_WIDTH, PHOTO_HEIGHT);
+  ctx.drawImage(video, 0, 0, COLLAGE_WIDTH, PHOTO_HEIGHT);
   img.src = canvas.toDataURL("image/png");
   img.onload = function () {
     tempImage = img;
@@ -69,7 +71,7 @@ function handleUpload(event) {
     let img = new Image();
     img.src = e.target.result;
     img.onload = function () {
-      tempImage = cropToAspectRatio(img, PHOTO_WIDTH / PHOTO_HEIGHT);
+      tempImage = cropToAspectRatio(img, COLLAGE_WIDTH / PHOTO_HEIGHT);
       addToCollageButton.disabled = false;
     };
   };
@@ -77,15 +79,18 @@ function handleUpload(event) {
 }
 
 function addPhotoToCollage() {
-  if (!tempImage || photos.length >= 4) return; // Maksimum 4 foto
+  if (!tempImage || photos.length >= MAX_PHOTOS) return;
 
-  const croppedImage = cropToAspectRatio(tempImage, PHOTO_WIDTH / PHOTO_HEIGHT);
+  const croppedImage = cropToAspectRatio(
+    tempImage,
+    COLLAGE_WIDTH / PHOTO_HEIGHT
+  );
   const tempCanvas = document.createElement("canvas");
   const tempCtx = tempCanvas.getContext("2d");
 
-  tempCanvas.width = PHOTO_WIDTH;
+  tempCanvas.width = COLLAGE_WIDTH;
   tempCanvas.height = PHOTO_HEIGHT;
-  tempCtx.drawImage(croppedImage, 0, 0, PHOTO_WIDTH, PHOTO_HEIGHT);
+  tempCtx.drawImage(croppedImage, 0, 0, COLLAGE_WIDTH, PHOTO_HEIGHT);
 
   photos.push(tempCanvas.toDataURL("image/png"));
   tempImage = null;
@@ -94,20 +99,21 @@ function addPhotoToCollage() {
 }
 
 function updateCollage() {
-  collageCanvas.width = COLLAGE_WIDTH;
-  collageCanvas.height = COLLAGE_HEIGHT;
+  const totalHeight = COLLAGE_HEIGHT;
+
+  collageCanvas.width = COLLAGE_WIDTH + BORDER_SIZE * 2;
+  collageCanvas.height = totalHeight;
 
   collageCtx.fillStyle = "white";
-  collageCtx.fillRect(0, 0, COLLAGE_WIDTH, COLLAGE_HEIGHT);
+  collageCtx.fillRect(0, 0, collageCanvas.width, collageCanvas.height);
 
-  let y = 0;
-
+  let y = BORDER_SIZE;
   photos.forEach((photo) => {
     let img = new Image();
     img.src = photo;
     img.onload = function () {
-      collageCtx.drawImage(img, 0, y, PHOTO_WIDTH, PHOTO_HEIGHT);
-      y += PHOTO_HEIGHT;
+      collageCtx.drawImage(img, BORDER_SIZE, y, COLLAGE_WIDTH, PHOTO_HEIGHT);
+      y += PHOTO_HEIGHT + SPACING;
     };
   });
 }
@@ -119,7 +125,7 @@ function saveCollage() {
   link.click();
 }
 
-// Fungsi untuk crop gambar agar tetap proporsional
+// **Fungsi untuk memastikan gambar tetap proporsional saat dipotong**
 function cropToAspectRatio(image, aspectRatio) {
   let { width, height } = image;
   let targetWidth = width;
@@ -136,7 +142,7 @@ function cropToAspectRatio(image, aspectRatio) {
   const tempCanvas = document.createElement("canvas");
   const tempCtx = tempCanvas.getContext("2d");
 
-  tempCanvas.width = PHOTO_WIDTH;
+  tempCanvas.width = COLLAGE_WIDTH;
   tempCanvas.height = PHOTO_HEIGHT;
   tempCtx.drawImage(
     image,
@@ -146,7 +152,7 @@ function cropToAspectRatio(image, aspectRatio) {
     targetHeight,
     0,
     0,
-    PHOTO_WIDTH,
+    COLLAGE_WIDTH,
     PHOTO_HEIGHT
   );
 
