@@ -9,7 +9,9 @@ const collageCtx = collageCanvas.getContext("2d");
 const saveButton = document.getElementById("savePhoto");
 const countdownElement = document.getElementById("countdown");
 const photoPreview = document.getElementById("photoPreview");
+const frameColorInput = document.getElementById("frameColor");
 
+let frameColor = "#fff"; // Default hitam
 let photos = [];
 let tempImage = null;
 
@@ -20,6 +22,11 @@ const PHOTO_HEIGHT = 325;
 const MAX_PHOTOS = 4;
 const SPACING = 10;
 const BORDER_SIZE = 30;
+
+frameColorInput.addEventListener("input", (event) => {
+  frameColor = event.target.value;
+  updateCollage();
+});
 
 // **Aktifkan Kamera**
 navigator.mediaDevices
@@ -78,17 +85,21 @@ function takePhoto() {
   canvas.width = COLLAGE_WIDTH;
   canvas.height = PHOTO_HEIGHT;
 
+  // 🔄 **Flip Horizontal**
+  ctx.save(); // Simpan state canvas
+  ctx.scale(-1, 1); // Balik secara horizontal
   ctx.drawImage(
     video,
     offsetX,
     offsetY,
     targetWidth,
     targetHeight,
-    0,
+    -COLLAGE_WIDTH, // Gambar di sisi kiri negatif agar tidak terpotong
     0,
     COLLAGE_WIDTH,
     PHOTO_HEIGHT
   );
+  ctx.restore(); // Kembalikan transformasi ke normal
 
   // **Tampilkan Preview**
   img.src = canvas.toDataURL("image/png");
@@ -143,12 +154,15 @@ function addPhotoToCollage() {
   photoPreview.style.display = "none";
 }
 
-// **Update Tampilan Kolase**
 function updateCollage() {
   collageCanvas.width = COLLAGE_WIDTH + BORDER_SIZE * 2;
   collageCanvas.height = COLLAGE_HEIGHT;
 
-  collageCtx.fillStyle = "white";
+  // Bersihkan canvas sebelum menggambar ulang
+  collageCtx.clearRect(0, 0, collageCanvas.width, collageCanvas.height);
+
+  // Gunakan warna frame yang dipilih
+  collageCtx.fillStyle = frameColor;
   collageCtx.fillRect(0, 0, collageCanvas.width, collageCanvas.height);
 
   let y = BORDER_SIZE;

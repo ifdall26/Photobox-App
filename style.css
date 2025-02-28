@@ -159,3 +159,16 @@ canvas {
   border-radius: 10px;
   text-align: center;
 }
+
+#frameColor {
+  width: 50px;
+  height: 35px;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+#video {
+  transform: scaleX(-1); /* Membalik secara horizontal */
+  -webkit-transform: scaleX(-1); /* Untuk kompatibilitas browser */
+}
