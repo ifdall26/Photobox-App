@@ -7,24 +7,42 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Photobox Web</h1>
+    <header>
+      <h1>📷 Photobox Web</h1>
+    </header>
 
-    <div class="container">
-      <button id="openCamera">Gunakan Kamera</button>
-      <input type="file" id="uploadImage" accept="image/*" />
-      <button id="addToCollage" disabled>Tambahkan ke Kolase</button>
-    </div>
+    <main class="container">
+      <section class="controls">
+        <button id="openCamera">Gunakan Kamera</button>
+        <input type="file" id="uploadImage" accept="image/*" />
+        <button id="addToCollage" disabled>Tambahkan ke Kolase</button>
+      </section>
 
-    <div class="preview">
-      <video id="video" autoplay></video>
-      <canvas id="canvas"></canvas>
-      <div id="countdown" class="countdown"></div>
-      <button id="capture">Ambil Foto</button>
-    </div>
+      <!-- Kamera & Capture -->
+      <section class="preview-container">
+        <div class="preview">
+          <video id="video" autoplay></video>
+          <canvas id="canvas"></canvas>
+          <div id="countdown" class="countdown"></div>
+        </div>
+        <button id="capture">📸 Ambil Foto</button>
+      </section>
 
-    <h2>Kolase</h2>
-    <canvas id="collageCanvas"></canvas>
-    <button id="savePhoto">Simpan Kolase</button>
+      <!-- Preview Hasil Foto -->
+      <section class="photo-preview">
+        <h2>📌 Preview Hasil</h2>
+        <img id="photoPreview" src="" alt="Hasil Foto" />
+      </section>
+
+      <!-- Kolase -->
+      <section class="collage-section">
+        <h2>🖼️ Kolase</h2>
+        <div class="collage-container">
+          <canvas id="collageCanvas"></canvas>
+        </div>
+        <button id="savePhoto">💾 Simpan Kolase</button>
+      </section>
+    </main>
 
     <script src="script.js"></script>
   </body>
