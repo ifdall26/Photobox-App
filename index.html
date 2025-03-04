@@ -12,38 +12,42 @@
     </header>
 
     <main class="container">
+      <!-- <button id="openCamera">Gunakan Kamera</button> -->
+      <button id="capture">📸 Ambil Foto</button>
       <section class="controls">
-        <button id="openCamera">Gunakan Kamera</button>
         <input type="file" id="uploadImage" accept="image/*" />
         <button id="addToCollage" disabled>Tambahkan ke Kolase</button>
       </section>
 
-      <!-- Kamera & Capture -->
-      <section class="preview-container">
-        <div class="preview">
-          <video id="video" autoplay></video>
-          <canvas id="canvas"></canvas>
-          <div id="countdown" class="countdown"></div>
-        </div>
-        <button id="capture">📸 Ambil Foto</button>
-      </section>
+      <div class="container2">
+        <div class="container3">
+          <!-- Kamera & Capture -->
+          <section class="preview-container">
+            <div class="preview">
+              <video id="video" autoplay></video>
+              <canvas id="canvas"></canvas>
+              <div id="countdown" class="countdown"></div>
+            </div>
+          </section>
 
-      <!-- Preview Hasil Foto -->
-      <section class="photo-preview">
-        <h2>📌 Preview Hasil</h2>
-        <img id="photoPreview" src="" alt="Hasil Foto" />
-      </section>
-
-      <!-- Kolase -->
-      <section class="collage-section">
-        <label for="frameColor">🎨 Warna Frame:</label>
-        <input type="color" id="frameColor" value="#000000" />
-        <h2>🖼️ Kolase</h2>
-        <div class="collage-container">
-          <canvas id="collageCanvas"></canvas>
+          <!-- Preview Hasil Foto -->
+          <section class="photo-preview">
+            <h2>📌 Preview Hasil</h2>
+            <img id="photoPreview" src="" alt="Hasil Foto" />
+          </section>
         </div>
-        <button id="savePhoto">💾 Simpan Kolase</button>
-      </section>
+
+        <!-- Kolase -->
+        <section class="collage-section">
+          <label for="frameColor">🎨 Warna Frame:</label>
+          <input type="color" id="frameColor" value="#000000" />
+          <h2>🖼️ Kolase</h2>
+          <div class="collage-container">
+            <canvas id="collageCanvas"></canvas>
+          </div>
+          <button id="savePhoto">💾 Simpan Kolase</button>
+        </section>
+      </div>
     </main>
 
     <script src="script.js"></script>

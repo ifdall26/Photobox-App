@@ -8,7 +8,7 @@
 
 /* Body */
 body {
-  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+  background: linear-gradient(135deg, #9adeff, #fad0c4);
   color: #333;
   text-align: center;
   padding: 20px;
@@ -33,6 +33,27 @@ h1 {
   flex-direction: column;
   align-items: center;
   gap: 20px;
+}
+
+.container3 {
+  display: flex;
+  flex-direction: column;
+}
+
+.container2 {
+  border: 2px solid rgba(0, 0, 0, 0.7);
+  display: flex;
+  background-color: lightskyblue;
+  border-radius: 20px;
+  flex-direction: row;
+  gap: 20px;
+  padding: 15px;
+}
+
+@media (max-width: 768px) {
+  .container2 {
+    flex-direction: column;
+  }
 }
 
 /* Controls */
@@ -79,7 +100,7 @@ input[type="file"] {
 .preview {
   position: relative;
   width: 320px;
-  height: 240px;
+  height: 241px;
   border: 4px solid white;
   border-radius: 8px;
   overflow: hidden;
@@ -117,9 +138,10 @@ canvas {
 }
 
 .photo-preview img {
-  width: 250px;
+  width: 320px;
   height: auto;
-  border-radius: 10px;
+  border: 4px solid white;
+  border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   margin-top: 10px;
 }
