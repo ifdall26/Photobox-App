@@ -220,9 +220,15 @@ canvas {
     max-width: 100%;
   }
   #uploadImage {
-    max-width: 272px;
+    max-width: 75%;
   }
   #addToCollage {
     width: -webkit-fill-available;
   }
 }
+
+/* @media (max-width: 768px) {
+  #uploadImage {
+    max-width: 255px;
+  }
+} */
